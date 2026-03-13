@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Анкета</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="formContainer">
+
+<div class="card">
+
+<h1 id="vacancyTitle"></h1>
+
+<form id="applyForm">
+
+<div class="formGroup">
+<label>Рівень мови</label>
+<select name="languageLevel" required>
+<option value="">Оберіть рівень</option>
+<option>A1</option>
+<option>A2</option>
+<option>B1</option>
+<option>B2</option>
+<option>C1</option>
+<option>C2</option>
+</select>
+</div>
+
+<div class="formGroup">
+<label>Чи є досвід роботи?</label>
+<select name="experience" required>
+<option value="">Оберіть варіант</option>
+<option>Немає</option>
+<option>До 6 місяців</option>
+<option>1+ рік</option>
+</select>
+</div>
+
+<div class="formGroup">
+<label>Ваш вік</label>
+<select name="age" required>
+<option value="">Оберіть вік</option>
+<option>18-22</option>
+<option>23-26</option>
+<option>27-30</option>
+<option>31-35</option>
+</select>
+</div>
+
+<div class="formGroup">
+<label>Ваше ім'я</label>
+<input name="name" required>
+</div>
+
+<div class="formGroup">
+<label>Ваш номер телефону</label>
+<input name="phone" required placeholder="+380...">
+</div>
+
+<div class="formGroup">
+<label>Ваш Telegram</label>
+<input name="telegram" required placeholder="@username">
+</div>
+
+<div class="formGroup">
+<label>Ваше місто</label>
+<input name="city" required>
+</div>
+
+<button type="submit">Подати заявку</button>
+
+</form>
+
+</div>
+
+</div>
+
+<script>
+
+const vacancyTitle = localStorage.getItem("vacancyTitle")
+
+document.getElementById("vacancyTitle").innerText = vacancyTitle
+
+
+document.getElementById("applyForm").addEventListener("submit", async function(e){
+
+e.preventDefault()
+
+const formData = new FormData(this)
+
+const data = Object.fromEntries(formData.entries())
+
+data.vacancy = vacancyTitle
+
+try{
+
+const response = await fetch("/apply",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(data)
+
+})
+
+if(response.ok){
+
+document.querySelector(".formContainer").innerHTML = `
+
+<div style="
+text-align:center;
+padding:50px;
+background:#111827;
+border-radius:16px;
+">
+
+<h2>Дякуємо!</h2>
+
+<p>Ваша анкета відправлена. З вами зв'яжеться менеджер найближчим часом.</p>
+
+<button onclick="window.location='/'">
+
+Повернутись на головну
+
+</button>
+
+</div>
+
+`
+
+}else{
+
+alert("Помилка відправки")
+
+}
+
+}catch(err){
+
+alert("Помилка сервера")
+
+}
+
+})
+
+</script>
+
+</body>
+
+</html>
+

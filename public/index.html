@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>WORKOFFICE</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- META PIXEL -->
+
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+
+fbq('init', '1285644486760158');
+fbq('track', 'PageView');
+</script>
+
+<style>
+
+.cookieBanner{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:#111827;
+color:white;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+z-index:1000;
+}
+
+.cookieBanner button{
+background:#22c55e;
+border:none;
+padding:8px 16px;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="languageContainer">
+
+<h1>Яку мову знаєте</h1>
+
+<div class="languageGrid">
+
+<div class="languageCard flagDE" onclick="chooseLang('de')">
+<div class="langText">
+<h2>DE</h2>
+<p>Німецька</p>
+</div>
+</div>
+
+<div class="languageCard flagEN" onclick="chooseLang('en')">
+<div class="langText">
+<h2>EN</h2>
+<p>Англійська</p>
+</div>
+</div>
+
+<div class="languageCard flagPL" onclick="chooseLang('pl')">
+<div class="langText">
+<h2>PL</h2>
+<p>Польська</p>
+</div>
+</div>
+
+</div>
+
+<div style="margin-top:40px;text-align:center;font-size:14px;opacity:0.8">
+
+<a href="/privacy.html" style="color:white;margin-right:20px">
+Політика конфіденційності
+</a>
+
+<a href="/terms.html" style="color:white">
+Умови використання
+</a>
+
+</div>
+
+</div>
+
+
+<!-- COOKIE BANNER -->
+
+<div id="cookieBanner" class="cookieBanner" style="display:none">
+
+<span>
+
+Цей сайт використовує cookies для покращення роботи сайту.
+
+</span>
+
+<button onclick="acceptCookies()">
+
+Прийняти
+
+</button>
+
+</div>
+
+
+<script>
+
+function chooseLang(lang){
+
+localStorage.setItem("vacancyLang",lang)
+
+window.location="vacancies.html"
+
+}
+
+
+/* COOKIE SYSTEM */
+
+if(!localStorage.getItem("cookiesAccepted")){
+
+document.getElementById("cookieBanner").style.display="flex"
+
+}
+
+function acceptCookies(){
+
+localStorage.setItem("cookiesAccepted","true")
+
+document.getElementById("cookieBanner").style.display="none"
+
+}
+
+</script>
+
+</body>
+
+</html>
+

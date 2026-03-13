@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Вакансії</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+
+fbq('init', '1285644486760158');
+fbq('track', 'PageView');
+</script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div id="jobs"></div>
+
+</div>
+
+<script>
+
+const lang = localStorage.getItem("vacancyLang")
+
+fetch("/vacancies")
+
+.then(res => res.json())
+
+.then(data => {
+
+const container = document.getElementById("jobs")
+
+const jobs = data.filter(v => v.language === lang)
+
+if(jobs.length === 0){
+
+container.innerHTML = `
+
+<div class="jobCard">
+
+<h2>Наразі вакансій немає</h2>
+
+<p>Будь ласка, оберіть іншу мову</p>
+
+<button onclick="window.location='/'">
+Обрати іншу мову
+</button>
+
+</div>
+
+`
+
+return
+
+}
+
+jobs.forEach(job => {
+
+const div = document.createElement("div")
+
+div.className = "jobCard"
+
+div.innerHTML = `
+
+<h2>${job.title}</h2>
+
+<p><strong>Місто:</strong> ${job.city}</p>
+
+<p><strong>Зарплата:</strong> ${job.salary}</p>
+
+<p class="jobDescription">${job.description}</p>
+
+<button onclick="openVacancy('${job.title}')">
+Подати заявку
+</button>
+
+`
+
+container.appendChild(div)
+
+})
+
+})
+
+
+function openVacancy(title){
+
+localStorage.setItem("vacancyTitle", title)
+
+window.location = "/vacancy.html"
+
+}
+
+</script>
+
+</body>
+
+</html>
+

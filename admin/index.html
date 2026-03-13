@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<title>WORKOFFICE Admin</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+display:flex;
+height:100vh;
+background:#f1f5f9;
+}
+
+/* sidebar */
+
+.sidebar{
+width:220px;
+background:#1e293b;
+color:white;
+padding:20px;
+}
+
+.sidebar h2{
+margin-top:0;
+}
+
+.menu button{
+width:100%;
+padding:12px;
+margin-top:8px;
+border:none;
+background:#334155;
+color:white;
+cursor:pointer;
+border-radius:6px;
+text-align:left;
+}
+
+.menu button:hover{
+background:#475569;
+}
+
+/* content */
+
+.content{
+flex:1;
+padding:30px;
+overflow:auto;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+/* inputs */
+
+input,select,textarea{
+width:100%;
+padding:10px;
+margin-top:6px;
+border-radius:6px;
+border:1px solid #ddd;
+}
+
+textarea{
+height:80px;
+}
+
+button.add{
+margin-top:10px;
+background:#06b6d4;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:6px;
+cursor:pointer;
+}
+
+button.delete{
+background:#ef4444;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* tables */
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #eee;
+text-align:left;
+}
+
+.hidden{
+display:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<h2>WORKOFFICE</h2>
+
+<div class="menu">
+
+<button onclick="showPage('dashboard')">Dashboard</button>
+<button onclick="showPage('vacancies')">Vacancies</button>
+<button onclick="showPage('applications')">Applications</button>
+
+</div>
+
+</div>
+
+<div class="content">
+
+<!-- DASHBOARD -->
+
+<div id="dashboard">
+
+<h1>Статистика заявок</h1>
+
+<div class="card">
+
+<canvas id="chart"></canvas>
+
+</div>
+
+</div>
+
+
+<!-- VACANCIES -->
+
+<div id="vacancies" class="hidden">
+
+<h1>Вакансії</h1>
+
+<div class="card">
+
+<h3>Додати вакансію</h3>
+
+<label>Назва</label>
+<input id="title">
+
+<label>Місто</label>
+<input id="city">
+
+<label>Зарплата</label>
+<input id="salary">
+
+<label>Мова</label>
+
+<select id="language">
+
+<option value="de">Німецька</option>
+<option value="en">Англійська</option>
+<option value="pl">Польська</option>
+
+</select>
+
+<label>Опис</label>
+<textarea id="description"></textarea>
+
+<button class="add" onclick="addVacancy()">
+
+Додати
+
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>Вакансії</h3>
+
+<div id="vacancyList"></div>
+
+</div>
+
+</div>
+
+
+<!-- APPLICATIONS -->
+
+<div id="applications" class="hidden">
+
+<h1>Кандидати</h1>
+
+<input id="search" placeholder="Пошук..." onkeyup="filterApps()">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Ім'я</th>
+<th>Телефон</th>
+<th>Telegram</th>
+<th>Місто</th>
+<th>Вакансія</th>
+</tr>
+
+</thead>
+
+<tbody id="apps"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* navigation */
+
+function showPage(page){
+
+document.querySelectorAll(".content > div").forEach(d=>d.classList.add("hidden"))
+
+document.getElementById(page).classList.remove("hidden")
+
+}
+
+/* load vacancies */
+
+function loadVacancies(){
+
+fetch("/vacancies")
+.then(res=>res.json())
+.then(data=>{
+
+const container=document.getElementById("vacancyList")
+
+container.innerHTML=""
+
+data.forEach(job=>{
+
+const div=document.createElement("div")
+
+div.innerHTML=`
+
+<b>${job.title}</b> — ${job.city} — ${job.salary}
+
+<button class="delete" onclick="deleteVacancy(${job.id})">Delete</button>
+
+`
+
+container.appendChild(div)
+
+})
+
+})
+
+}
+
+/* add vacancy */
+
+function addVacancy(){
+
+fetch("/vacancies",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+title:title.value,
+city:city.value,
+salary:salary.value,
+language:language.value,
+description:description.value
+
+})
+
+}).then(loadVacancies)
+
+}
+
+/* delete vacancy */
+
+function deleteVacancy(id){
+
+fetch("/vacancies/"+id,{method:"DELETE"}).then(loadVacancies)
+
+}
+
+/* applications */
+
+function loadApps(){
+
+fetch("/applications")
+.then(res=>res.json())
+.then(data=>{
+
+const container=document.getElementById("apps")
+
+container.innerHTML=""
+
+data.forEach(app=>{
+
+const tr=document.createElement("tr")
+
+tr.innerHTML=`
+
+<td>${app.name}</td>
+<td>${app.phone}</td>
+<td>${app.telegram}</td>
+<td>${app.city}</td>
+<td>${app.vacancy}</td>
+
+`
+
+container.appendChild(tr)
+
+})
+
+})
+
+}
+
+/* search */
+
+function filterApps(){
+
+const value=document.getElementById("search").value.toLowerCase()
+
+document.querySelectorAll("#apps tr").forEach(row=>{
+
+row.style.display=row.innerText.toLowerCase().includes(value) ? "" : "none"
+
+})
+
+}
+
+/* statistics */
+
+Promise.all([
+fetch("/applications").then(r=>r.json()),
+fetch("/vacancies").then(r=>r.json())
+]).then(([apps,vacs])=>{
+
+const stats={}
+
+vacs.forEach(v=>{
+stats[v.title]=0
+})
+
+apps.forEach(a=>{
+
+if(stats[a.vacancy]!==undefined){
+stats[a.vacancy]++
+}
+
+})
+
+const labels=Object.keys(stats)
+const values=Object.values(stats)
+
+const ctx=document.getElementById("chart")
+
+new Chart(ctx,{
+type:"bar",
+data:{
+labels:labels,
+datasets:[{
+label:"Кількість заявок",
+data:values
+}]
+}
+})
+
+})
+
+loadVacancies()
+loadApps()
+
+</script>
+
+</body>
+
+</html>
+
